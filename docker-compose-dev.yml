@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: polstack-postgres
+    environment:
+      POSTGRES_USER: postgreslocal
+      POSTGRES_PASSWORD: postgreslocal
+      POSTGRES_DB: polstack
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+# Database URL format:
+# postgresql://postgreslocal:postgreslocal@localhost:5432/polstack
