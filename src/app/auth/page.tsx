@@ -1,11 +1,11 @@
 import React, { Suspense } from "react";
-import { AuthForm, AuthFormSkeleton } from "../_components/auth-form";
+import { AuthForm, AuthFormSkeleton } from "./_components/auth-form";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { GalleryVerticalEnd } from "lucide-react";
-import ErrorNotification from "../_components/error-notification";
-import VerifyNotification from "../_components/verify-notification";
+import ErrorNotification from "./_components/error-notification";
+import VerifyNotification from "./_components/verify-notification";
 
 async function Page() {
   const session = await auth();

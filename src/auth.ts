@@ -10,9 +10,9 @@ import Google from "next-auth/providers/google";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
-    signIn: "/auth/sign-in",
-    error: "/auth/sign-in",
-    verifyRequest: "/auth/sign-in",
+    signIn: "/auth",
+    error: "/auth",
+    verifyRequest: "/auth",
     newUser: "/welcome",
   },
   adapter: PrismaAdapter(db),
