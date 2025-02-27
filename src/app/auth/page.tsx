@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import { AuthForm, AuthFormSkeleton } from "./_components/auth-form";
+import { AuthForm, AuthFormSkeleton } from "../auth-form";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";

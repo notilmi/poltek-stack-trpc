@@ -26,21 +26,21 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { updateProfileSchema } from "@/server/api/routers/profile/validator";
+import profileSchema from "@/server/api/routers/profile/validator";
 import { Save } from "lucide-react";
 
 export default function ProfileEditForm() {
   const [avatar, setAvatar] = useState("/placeholder.svg?height=100&width=100");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const form = useForm<z.infer<typeof updateProfileSchema>>({
-    resolver: zodResolver(updateProfileSchema),
+  const form = useForm<z.infer<typeof profileSchema.update>>({
+    resolver: zodResolver(profileSchema.update),
     defaultValues: {
       name: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof updateProfileSchema>) {
+  function onSubmit(values: z.infer<typeof profileSchema.update>) {
     // Here you would typically send the data to your backend
     console.log("Form submitted", { ...values, avatar });
   }

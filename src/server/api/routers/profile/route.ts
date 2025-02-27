@@ -1,10 +1,10 @@
 import { authedProcedure, createTRPCRouter } from "../../trpc";
 import { TRPCError } from "@trpc/server";
-import { updateProfileSchema } from "./validator";
+import profileSchema from "./validator";
 
 export const profileRoutes = createTRPCRouter({
   update: authedProcedure
-    .input(updateProfileSchema)
+    .input(profileSchema.update)
     .mutation(async ({ input, ctx }) => {
       const { db, user } = ctx;
 
