@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { message: "File uploaded", url: `/${objectKey}` },
+      { message: "File uploaded", url: `/api/storage/view/${objectKey}` },
       { status: 200 },
     );
   } catch (error) {

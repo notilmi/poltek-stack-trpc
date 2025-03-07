@@ -12,7 +12,6 @@ import { type NextRequest, NextResponse } from "next/server";
  * - Private: Only Same User (Owner) Can View
  * - Public: Anyone Can View
  */
-
 export async function GET(request: NextRequest) {
   const url = request.url;
   const s3Key = url.split("/").slice(6).join("/");
