@@ -29,14 +29,21 @@ import {
 import profileSchema from "@/server/api/routers/profile/validator";
 import { Save } from "lucide-react";
 
-export default function ProfileEditForm() {
-  const [avatar, setAvatar] = useState("/placeholder.svg?height=100&width=100");
+type ProfileEditForm = {
+  name: string | undefined;
+  avatar: string | undefined;
+};
+
+export default function ProfileEditForm({ name, avatar }: ProfileEditForm) {
+  const [userAvatar, setUserAvatar] = useState<string>(
+    avatar ?? "/placeholder.svg",
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<z.infer<typeof profileSchema.update>>({
     resolver: zodResolver(profileSchema.update),
     defaultValues: {
-      name: "",
+      name: name ?? "",
     },
   });
 
@@ -54,10 +61,32 @@ export default function ProfileEditForm() {
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setAvatar(e.target?.result as string);
+        setUserAvatar(e.target?.result as string);
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleUploadAvatar = async () => {
+    const file = fileInputRef.current?.files?.[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("public", "true");
+
+      const response = await fetch("/api/storage/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const data = (await response.json()) as { message: string; url: string };
+      return data;
+    }
+    return null;
   };
 
   return (
@@ -75,9 +104,9 @@ export default function ProfileEditForm() {
                 onClick={handleAvatarClick}
               >
                 <Image
-                  src={avatar || "/placeholder.svg"}
-                  alt="Avatar"
                   fill
+                  src={userAvatar}
+                  alt="Avatar"
                   style={{ objectFit: "cover" }}
                 />
               </div>
