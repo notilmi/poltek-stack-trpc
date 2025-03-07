@@ -1,48 +1,41 @@
 import { auth } from "@/auth";
 import { s3, s3Bucket } from "@/lib/storage/s3";
-import { type NextRequestWithAuth } from "@/types";
 import {
   PutObjectCommand,
   type PutObjectCommandInput,
 } from "@aws-sdk/client-s3";
-import { NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
+import { HTTPException } from "../../_errors";
 
-export const POST = auth(async (request: NextRequestWithAuth) => {
+export async function POST(request: NextRequest) {
   try {
-    if (!request.auth) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-
-    const { user } = request.auth;
-
-    if (!user) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+    const session = await auth();
+    if (!session?.user) throw new HTTPException("Unauthorized", 401);
+    const { user } = session;
 
     const formData = await request.formData();
+
     const file =
       formData.get("file") instanceof File
         ? (formData.get("file") as File)
         : null;
-    const privacy: string = (formData.get("privacy") as string) || "public";
+    const isPublic: string = (formData.get("public") as string) ?? "true";
 
-    if (["public", "private"].includes(privacy)) {
-      return NextResponse.json(
-        { message: "Invalid privacy rule" },
-        { status: 400 },
-      );
-    }
+    const parsedPublic = isPublic === "true" ? true : false;
 
-    if (!file) {
-      return NextResponse.json({ message: "No file found" }, { status: 400 });
-    }
+    if (!file) throw new HTTPException("BAD REQUEST", 400);
+
+    const fileBuffer = Buffer.from(await file.arrayBuffer());
+
+    const objectKey = `${user.id}/${file.name}`;
 
     const input = {
       Bucket: s3Bucket,
       Key: `${user.id}/${file.name}`,
-      Body: file,
+      Body: fileBuffer,
+      ContentType: file.type,
       Metadata: {
-        privacy,
+        public: parsedPublic.toString(),
         owner: user.id!,
       },
     } satisfies PutObjectCommandInput;
@@ -57,12 +50,27 @@ export const POST = auth(async (request: NextRequestWithAuth) => {
       );
     }
 
-    return NextResponse.json({ message: "File uploaded" }, { status: 200 });
+    return NextResponse.json(
+      { message: "File uploaded", url: `/${objectKey}` },
+      { status: 200 },
+    );
   } catch (error) {
-    console.error(error);
+    console.error(`[❌ Storage ERROR: POST /api/storage/upload`, error);
+
+    if (error instanceof HTTPException) {
+      return NextResponse.json(
+        {
+          message: error.message,
+        },
+        {
+          status: error.status,
+        },
+      );
+    }
+
     return NextResponse.json(
       { message: "Failed to upload file" },
       { status: 500 },
     );
   }
-});
+}

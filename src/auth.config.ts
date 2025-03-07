@@ -12,9 +12,25 @@ export const authConfig = {
   },
   adapter: PrismaAdapter(db),
   session: { strategy: "jwt" },
-  //   session: {
-  //     strategy: "jwt",
-  //   },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.sub = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.picture = user.image;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      session.user.id = token.sub ?? "";
+      session.user.email = token.email ?? "";
+      session.user.name = token.name;
+      session.user.image = token.picture;
+
+      return session;
+    },
+  },
   providers: [
     // Credentials({
     //   credentials: {
