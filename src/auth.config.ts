@@ -8,7 +8,7 @@ export const authConfig = {
     signIn: "/auth",
     error: "/auth",
     verifyRequest: "/auth",
-    newUser: "/welcome",
+    newUser: "/auth/profile?new=true",
   },
   adapter: PrismaAdapter(db),
   session: { strategy: "jwt" },

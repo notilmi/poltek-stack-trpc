@@ -27,11 +27,12 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import profileSchema from "@/server/api/routers/profile/validator";
-import { Save } from "lucide-react";
+import { Forward, Save } from "lucide-react";
 import { handleUploadFile } from "@/lib/storage/client";
 import toast from "react-hot-toast";
 import { api } from "@/trpc/react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter, useSearchParams } from "next/navigation";
 
 type ProfileEditForm = {
   name: string | undefined;
@@ -77,12 +78,19 @@ export function ProfileEditForm({ name, avatar }: ProfileEditForm) {
   const [userAvatar, setUserAvatar] = useState<string>(
     avatar ?? "/placeholder.svg",
   );
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const isNew = searchParams.get("new");
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { isPending: profileMutationPending, mutate: profileMutate } =
     api.profile.update.useMutation({
       onSuccess: () => {
         toast.success("Profile updated successfully");
+        if (isNew) router.push("/dashboard");
       },
       onError: () => {
         toast.error("Failed to update profile");
@@ -130,8 +138,12 @@ export function ProfileEditForm({ name, avatar }: ProfileEditForm) {
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="space-y-1 text-center">
-        <CardTitle className="text-2xl font-semibold">Edit Profile</CardTitle>
-        <CardDescription>Update your profile information below</CardDescription>
+        <CardTitle className="text-2xl font-semibold">
+          {isNew ? "Finish Your Profile" : "Edit Profile"}
+        </CardTitle>
+        <CardDescription>
+          {isNew ? "Finish" : "Update"} your profile information below
+        </CardDescription>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -184,8 +196,8 @@ export function ProfileEditForm({ name, avatar }: ProfileEditForm) {
               className="w-full"
               disabled={profileMutationPending}
             >
-              <Save />
-              Save Changes
+              {isNew ? <Forward /> : <Save />}
+              {isNew ? "Finish Profile" : "Save Changes"}
             </Button>
           </CardFooter>
         </form>
