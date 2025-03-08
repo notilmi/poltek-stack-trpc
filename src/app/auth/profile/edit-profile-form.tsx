@@ -28,17 +28,66 @@ import {
 } from "@/components/ui/card";
 import profileSchema from "@/server/api/routers/profile/validator";
 import { Save } from "lucide-react";
+import { handleUploadFile } from "@/lib/storage/client";
+import toast from "react-hot-toast";
+import { api } from "@/trpc/react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type ProfileEditForm = {
   name: string | undefined;
   avatar: string | undefined;
 };
 
-export default function ProfileEditForm({ name, avatar }: ProfileEditForm) {
+export function ProfileEditFormSkeleton() {
+  return (
+    <Card className="w-full max-w-md">
+      <CardHeader className="space-y-1 text-center">
+        <CardTitle className="text-2xl font-semibold">
+          <Skeleton className="mx-auto h-6 w-[200px]" />
+        </CardTitle>
+        <CardDescription>
+          <Skeleton className="mx-auto h-4 w-[250px]" />
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="flex flex-col items-center space-y-4">
+          <Skeleton className="h-24 w-24 rounded-full" />
+          <Skeleton className="h-8 w-32" />
+        </div>
+        <div className="grid gap-2">
+          <FormItem>
+            <FormLabel>
+              <Skeleton className="h-4 w-24" />
+            </FormLabel>
+            <FormControl>
+              <Skeleton className="h-10 w-full" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </div>
+      </CardContent>
+      <CardFooter>
+        <Skeleton className="h-10 w-full" />
+      </CardFooter>
+    </Card>
+  );
+}
+
+export function ProfileEditForm({ name, avatar }: ProfileEditForm) {
   const [userAvatar, setUserAvatar] = useState<string>(
     avatar ?? "/placeholder.svg",
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { isPending: profileMutationPending, mutate: profileMutate } =
+    api.profile.update.useMutation({
+      onSuccess: () => {
+        toast.success("Profile updated successfully");
+      },
+      onError: () => {
+        toast.error("Failed to update profile");
+      },
+    });
 
   const form = useForm<z.infer<typeof profileSchema.update>>({
     resolver: zodResolver(profileSchema.update),
@@ -47,9 +96,20 @@ export default function ProfileEditForm({ name, avatar }: ProfileEditForm) {
     },
   });
 
-  function onSubmit(values: z.infer<typeof profileSchema.update>) {
-    // Here you would typically send the data to your backend
-    console.log("Form submitted", { ...values, avatar });
+  async function onSubmit(values: z.infer<typeof profileSchema.update>) {
+    const file = fileInputRef.current?.files?.[0];
+
+    if (file) {
+      const response = await handleUploadFile(file, true, 1024 * 1024 * 5);
+
+      if ("url" in response) {
+        values.image = response.url;
+      } else {
+        return toast.error(response.message);
+      }
+    }
+
+    profileMutate(values);
   }
 
   const handleAvatarClick = () => {
@@ -65,28 +125,6 @@ export default function ProfileEditForm({ name, avatar }: ProfileEditForm) {
       };
       reader.readAsDataURL(file);
     }
-  };
-
-  const handleUploadAvatar = async () => {
-    const file = fileInputRef.current?.files?.[0];
-    if (file) {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("public", "true");
-
-      const response = await fetch("/api/storage/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        return null;
-      }
-
-      const data = (await response.json()) as { message: string; url: string };
-      return data;
-    }
-    return null;
   };
 
   return (
@@ -141,7 +179,11 @@ export default function ProfileEditForm({ name, avatar }: ProfileEditForm) {
             />
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full">
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={profileMutationPending}
+            >
               <Save />
               Save Changes
             </Button>

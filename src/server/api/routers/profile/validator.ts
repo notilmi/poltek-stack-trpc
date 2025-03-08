@@ -21,7 +21,7 @@ const formatBytes = (bytes: number, decimals = 2) => {
 
 const profileSchema = {
   update: z.object({
-    image: z.string().url().optional(),
+    image: z.string().optional(),
     name: z.string().min(2).max(50).optional(),
   }),
 

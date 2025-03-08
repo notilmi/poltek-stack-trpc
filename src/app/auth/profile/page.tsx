@@ -1,8 +1,9 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import React from "react";
-import EditProfileForm from "./edit-profile-form";
+import React, { Suspense } from "react";
+import { ProfileEditForm, ProfileEditFormSkeleton } from "./edit-profile-form";
 import { type Metadata } from "next";
+import { api } from "@/trpc/server";
 
 export const metadata: Metadata = {
   title: "Polstack App | Profile",
@@ -14,12 +15,16 @@ async function Page() {
 
   if (!session?.user) redirect("/auth");
 
+  const userDetails = await api.profile.getById({ userId: session.user.id! });
+
   return (
     <div>
-      <EditProfileForm
-        name={session.user.name ?? undefined}
-        avatar={session.user.image ?? undefined}
-      />
+      <Suspense fallback={<ProfileEditFormSkeleton />}>
+        <ProfileEditForm
+          name={userDetails.name ?? undefined}
+          avatar={userDetails.image ?? undefined}
+        />
+      </Suspense>
     </div>
   );
 }
