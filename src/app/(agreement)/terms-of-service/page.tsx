@@ -1,3 +1,10 @@
+import { type Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Terms of Service",
+  description: "Posltack | Terms of Service",
+};
+
 function TOSPage() {
   return (
     <div className="prose lg:prose-lg mx-auto h-screen max-w-screen-md p-4 py-12 text-justify">
