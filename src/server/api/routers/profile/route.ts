@@ -67,4 +67,9 @@ export const profileRoutes = createTRPCRouter({
         });
       }
     }),
+  me: authedProcedure.query(async ({ ctx }) => {
+    const { user } = ctx;
+
+    return user;
+  }),
 });
