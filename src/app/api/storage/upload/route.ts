@@ -6,6 +6,7 @@ import {
 } from "@aws-sdk/client-s3";
 import { type NextRequest, NextResponse } from "next/server";
 import { HTTPException } from "../../_errors";
+import { randomString } from "@/lib/utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,11 +28,11 @@ export async function POST(request: NextRequest) {
 
     const fileBuffer = Buffer.from(await file.arrayBuffer());
 
-    const objectKey = `${user.id}/${file.name}`;
+    const objectKey = `${user.id}/${randomString(10)}.${file.name.split(".").pop()}`;
 
     const input = {
       Bucket: s3Bucket,
-      Key: `${user.id}/${file.name}`,
+      Key: `${objectKey}`,
       Body: fileBuffer,
       ContentType: file.type,
       Metadata: {

@@ -113,7 +113,7 @@ export function ProfileEditForm({ name, avatar }: ProfileEditForm) {
       if ("url" in response) {
         values.image = response.url;
       } else {
-        return toast.error(response.message);
+        return toast.error("Gagal mengupload gambar, ");
       }
     }
 

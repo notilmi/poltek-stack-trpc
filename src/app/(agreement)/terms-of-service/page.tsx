@@ -1,4 +1,5 @@
 import { type Metadata } from "next";
+import BackButton from "../../_components/back-button";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
@@ -8,6 +9,7 @@ export const metadata: Metadata = {
 function TOSPage() {
   return (
     <div className="prose lg:prose-lg mx-auto h-screen max-w-screen-md p-4 py-12 text-justify">
+      <BackButton className="mb-4" />
       <h1>Terms Of Service</h1>
       <p>Last updated: March 08, 2025</p>
       <p>

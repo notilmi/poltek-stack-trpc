@@ -4,6 +4,7 @@ import React, { Suspense } from "react";
 import { ProfileEditForm, ProfileEditFormSkeleton } from "./edit-profile-form";
 import { type Metadata } from "next";
 import { api } from "@/trpc/server";
+import BackButton from "@/app/_components/back-button";
 
 export const metadata: Metadata = {
   title: "Polstack App | Profile",
@@ -19,6 +20,7 @@ async function Page() {
 
   return (
     <div>
+      <BackButton className="mb-4" />
       <Suspense fallback={<ProfileEditFormSkeleton />}>
         <ProfileEditForm
           name={userDetails.name ?? undefined}

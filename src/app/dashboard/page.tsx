@@ -16,6 +16,8 @@ async function DashboardPage() {
   if (!session) {
     redirect("/auth");
   }
+
+  console.log(session.user?.image);
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center gap-2">
       <Image
@@ -23,7 +25,7 @@ async function DashboardPage() {
         alt="User Image"
         width={100}
         height={100}
-        className="rounded-full"
+        className="aspect-square rounded-full object-cover"
       />
       <h1 className="text-2xl">Welcome, {session?.user?.name}!</h1>
       <span>
