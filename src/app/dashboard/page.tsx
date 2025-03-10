@@ -13,9 +13,7 @@ const handleLogOut = async () => {
 async function DashboardPage() {
   const session = await auth();
 
-  if (!session) {
-    redirect("/auth");
-  }
+  if (!session) redirect("/auth");
 
   console.log(session.user?.image);
   return (
