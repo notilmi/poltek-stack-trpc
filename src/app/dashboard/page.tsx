@@ -1,43 +1,42 @@
-import { auth, signOut } from "@/auth";
-import { Button } from "@/components/ui/button";
-import { DoorOpen } from "lucide-react";
-import Image from "next/image";
+import { auth } from "@/auth";
+import { api } from "@/trpc/server";
 import { redirect } from "next/navigation";
 import React from "react";
-
-const handleLogOut = async () => {
-  "use server";
-  await signOut();
-};
+import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
+import Link from "next/link";
+import { connection } from "next/server";
+import TodoCard from "./_components/todo-card";
 
 async function DashboardPage() {
+  await connection();
   const session = await auth();
 
   if (!session) redirect("/auth");
 
-  console.log(session.user?.image);
+  const todos = await api.todo.getAll();
+
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center gap-2">
-      <Image
-        src={session?.user?.image ?? "/placeholder.svg"}
-        alt="User Image"
-        width={100}
-        height={100}
-        className="aspect-square rounded-full object-cover"
-      />
-      <h1 className="text-2xl">Welcome, {session?.user?.name}!</h1>
-      <span>
-        Start By Editing{" "}
-        <code className="rounded-lg bg-muted p-1 font-semibold">
-          dashboard/page.tsx
-        </code>
-      </span>
-      <form action={handleLogOut} className="mt-4">
-        <Button>
-          <DoorOpen />
-          Log Out
-        </Button>
-      </form>
+    <div
+      aria-label="container"
+      className="mx-auto min-h-screen max-w-screen-sm p-4"
+    >
+      <div className="rounded-lg border p-4">
+        <div className="mb-4 flex items-center justify-between gap-2">
+          <h1 className="text-2xl font-bold">🗒️ Sticky Wall Todo</h1>
+          <Link href="/dashboard/new">
+            <Button>
+              <PlusCircle />
+              Tambah
+            </Button>
+          </Link>
+        </div>
+        <div className="flex flex-col gap-2">
+          {todos.map((todo, idx) => (
+            <TodoCard {...todo} key={idx} />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
