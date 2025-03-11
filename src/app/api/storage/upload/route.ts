@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       ContentType: file.type,
       Metadata: {
         public: parsedPublic.toString(),
-        owner: user.id!,
+        owner: user.id,
       },
     } satisfies PutObjectCommandInput;
 

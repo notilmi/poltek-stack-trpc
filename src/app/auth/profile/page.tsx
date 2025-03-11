@@ -16,7 +16,7 @@ async function Page() {
 
   if (!session?.user) redirect("/auth");
 
-  const userDetails = await api.profile.getById({ userId: session.user.id! });
+  const userDetails = await api.profile.getById({ userId: session.user.id });
 
   return (
     <div>
