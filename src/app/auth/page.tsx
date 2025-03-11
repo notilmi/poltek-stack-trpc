@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React from "react";
 import { AuthForm } from "./auth-form";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
@@ -7,6 +7,9 @@ import VerifyNotification from "./_components/verify-notification";
 import ErrorNotification from "./_components/error-notification";
 import Stack from "@mui/material/Stack";
 
+/**
+ * TODO: Fix Auth Search Params Missing After Redireted From The Authjs Verify Request
+ */
 async function Page() {
   const session = await auth();
 
