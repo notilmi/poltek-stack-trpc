@@ -1,11 +1,11 @@
 import React, { Suspense } from "react";
-import { AuthForm, AuthFormSkeleton } from "./auth-form";
+import { AuthForm } from "./auth-form";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import { GalleryVerticalEnd } from "lucide-react";
-import ErrorNotification from "./_components/error-notification";
+import Container from "@mui/material/Container";
 import VerifyNotification from "./_components/verify-notification";
+import ErrorNotification from "./_components/error-notification";
+import Stack from "@mui/material/Stack";
 
 async function Page() {
   const session = await auth();
@@ -15,22 +15,25 @@ async function Page() {
   }
 
   return (
-    <Suspense fallback={<AuthFormSkeleton />}>
-      <div className="flex flex-col items-center gap-4">
-        <Link
-          href="/"
-          className="flex items-center gap-2 self-center text-lg font-medium"
-        >
-          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <GalleryVerticalEnd className="size-4" />
-          </div>
-          Acme Inc.
-        </Link>
+    <Container
+      maxWidth="sm"
+      sx={{
+        p: {
+          xs: 2,
+          md: 4,
+        },
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+      }}
+    >
+      <Stack direction="column" spacing={4}>
         <AuthForm />
-        <ErrorNotification />
         <VerifyNotification />
-      </div>
-    </Suspense>
+        <ErrorNotification />
+      </Stack>
+    </Container>
   );
 }
 

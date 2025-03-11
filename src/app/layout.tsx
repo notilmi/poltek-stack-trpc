@@ -1,11 +1,17 @@
 import "@/styles/globals.css";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 
-import { GeistSans } from "geist/font/sans";
+import { Inter as FontSans } from "next/font/google";
 import { type Metadata } from "next";
 
 import { TRPCReactProvider } from "@/trpc/react";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "react-hot-toast";
+import { NextAppProvider } from "@toolpad/core/nextjs";
+import { theme } from "./_lib/theme";
+import { auth } from "@/auth";
+import { AUTHENTICATION, NAVIGATION } from "./_constants";
+import { Account } from "@toolpad/core/Account";
 
 export const metadata: Metadata = {
   title: "Poltekstack",
@@ -13,16 +19,45 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({
+const fontSans = FontSans({
+  weight: ["300", "400", "500", "700"],
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-sans",
+});
+
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const session = await auth();
+
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
+    <html
+      lang="en"
+      className={`${fontSans.variable}`}
+      suppressHydrationWarning
+      data-toolpad-color-scheme="light"
+    >
       <body>
-        <TRPCReactProvider>
-          <Toaster />
-          <SessionProvider>{children}</SessionProvider>
-        </TRPCReactProvider>
+        <AppRouterCacheProvider
+          options={{
+            key: "css",
+          }}
+        >
+          <TRPCReactProvider>
+            <Toaster />
+            <SessionProvider>
+              <NextAppProvider
+                session={session}
+                navigation={NAVIGATION}
+                authentication={AUTHENTICATION}
+                theme={theme}
+              >
+                {children}
+              </NextAppProvider>
+            </SessionProvider>
+          </TRPCReactProvider>
+        </AppRouterCacheProvider>
       </body>
     </html>
   );

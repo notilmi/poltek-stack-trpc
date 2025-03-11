@@ -5,11 +5,11 @@ import Resend from "next-auth/providers/resend";
 import Google from "next-auth/providers/google";
 
 export const authConfig = {
-  trustHost: true,
+  // trustHost: true,
   pages: {
     signIn: "/auth",
     error: "/auth",
-    verifyRequest: "/auth",
+    verifyRequest: "/auth/",
     newUser: "/auth/profile?new=true",
   },
   adapter: PrismaAdapter(db),

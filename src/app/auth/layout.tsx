@@ -1,3 +1,4 @@
+import Container from '@mui/material/Container';
 import type { Metadata } from "next";
 import React from "react";
 
@@ -9,9 +10,14 @@ export const metadata: Metadata = {
 
 function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <main className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
-      <div className="flex w-full max-w-sm flex-col gap-6">{children}</div>
-    </main>
+    <Container
+      maxWidth="lg"
+      sx={{
+        minHeight: "100vh",
+      }}
+    >
+      {children}
+    </Container>
   );
 }
 

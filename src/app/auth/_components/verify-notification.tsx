@@ -1,17 +1,19 @@
 "use client";
+import Alert from "@mui/material/Alert";
 import { useSearchParams } from "next/navigation";
 import React from "react";
-
+import AlertTitle from "@mui/material/AlertTitle";
 enum Verify {
   email = "email",
 }
 
 const verifyMap = {
   [Verify.email]: (
-    <p>
-      A verification email has been sent to your email address. Please check
-      your inbox and follow the instructions to verify your account.
-    </p>
+    <>
+      <AlertTitle>Email Sent!</AlertTitle>A verification email has been sent to
+      your email address. Please check your inbox and follow the instructions to
+      verify your account.
+    </>
   ),
 };
 
@@ -21,9 +23,9 @@ function VerifyNotification() {
 
   if (verify) {
     return (
-      <div className="w-full rounded-lg border border-muted-foreground/20 bg-muted-foreground/10 p-4 text-muted-foreground">
+      <Alert severity="success">
         {verifyMap[verify] || "Permintaan Berhasil Diproses."}
-      </div>
+      </Alert>
     );
   }
 }
