@@ -3,6 +3,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "./server/db";
 import Resend from "next-auth/providers/resend";
 import Google from "next-auth/providers/google";
+
 export const authConfig = {
   trustHost: true,
   pages: {
