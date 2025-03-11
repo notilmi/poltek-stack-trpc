@@ -5,11 +5,6 @@ import { z } from "zod";
 
 export const todoRoutes = createTRPCRouter({
   getAll: authedProcedure.query(async ({ ctx }) => {
-    if (!ctx.user.id)
-      throw new TRPCError({
-        code: "UNAUTHORIZED",
-        message: "You must be logged in to get todos",
-      });
     const todos = await ctx.db.todos.findMany({
       where: {
         userId: ctx.user.id,
@@ -23,11 +18,6 @@ export const todoRoutes = createTRPCRouter({
   getById: authedProcedure
     .input(z.string().describe("Todo ID"))
     .query(async ({ input, ctx }) => {
-      if (!ctx.user.id)
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "You must be logged in to get a todo",
-        });
       const todo = await ctx.db.todos.findUnique({
         where: {
           id: input,
@@ -38,12 +28,6 @@ export const todoRoutes = createTRPCRouter({
   create: authedProcedure
     .input(todoValidators.create)
     .mutation(async ({ input, ctx }) => {
-      if (!ctx.user.id)
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "You must be logged in to create a todo",
-        });
-
       await ctx.db.todos.create({
         data: {
           title: input.title,
@@ -59,12 +43,6 @@ export const todoRoutes = createTRPCRouter({
   update: authedProcedure
     .input(todoValidators.update)
     .mutation(async ({ input, ctx }) => {
-      if (!ctx.user.id)
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "You must be logged in to update a todo",
-        });
-
       const existingTodo = await ctx.db.todos.findUnique({
         where: {
           id: input.id,
@@ -97,12 +75,6 @@ export const todoRoutes = createTRPCRouter({
   delete: authedProcedure
     .input(todoValidators.delete)
     .mutation(async ({ input, ctx }) => {
-      if (!ctx.user.id)
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "You must be logged in to delete a todo",
-        });
-
       const existingTodo = await ctx.db.todos.findUnique({
         where: {
           id: input.id,
