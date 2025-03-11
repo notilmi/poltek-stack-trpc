@@ -1,44 +1,34 @@
-import { auth, signOut } from "@/auth";
+import { api, HydrateClient } from "@/trpc/server";
+import React, { Suspense } from "react";
+import TodoList from "./todo-list";
+import { ErrorBoundary } from "react-error-boundary";
 import { Button } from "@/components/ui/button";
-import { DoorOpen } from "lucide-react";
-import Image from "next/image";
-import { redirect } from "next/navigation";
-import React from "react";
-
-const handleLogOut = async () => {
-  "use server";
-  await signOut();
-};
+import { PlusCircle } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
 
 async function DashboardPage() {
-  const session = await auth();
-
-  if (!session) redirect("/auth");
-
-  console.log(session.user?.image);
+  void api.todo.getAll.prefetch();
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center gap-2">
-      <Image
-        src={session?.user?.image ?? "/placeholder.svg"}
-        alt="User Image"
-        width={100}
-        height={100}
-        className="aspect-square rounded-full object-cover"
-      />
-      <h1 className="text-2xl">Welcome, {session?.user?.name}!</h1>
-      <span>
-        Start By Editing{" "}
-        <code className="rounded-lg bg-muted p-1 font-semibold">
-          dashboard/page.tsx
-        </code>
-      </span>
-      <form action={handleLogOut} className="mt-4">
-        <Button>
-          <DoorOpen />
-          Log Out
-        </Button>
-      </form>
-    </div>
+    <HydrateClient>
+      <div className="mx-auto max-w-screen-sm p-4 lg:p-8">
+        <div className="flex flex-row items-center justify-between gap-2">
+          <h1 className="text-2xl font-bold">TODO List 📔</h1>
+          <Link href="/dashboard/new">
+            <Button size="sm">
+              <PlusCircle />
+              Add
+            </Button>
+          </Link>
+        </div>
+        <Separator className="my-4" />
+        <Suspense fallback={<div>Loading...</div>}>
+          <ErrorBoundary fallback={<div>Something went wrong</div>}>
+            <TodoList />
+          </ErrorBoundary>
+        </Suspense>
+      </div>
+    </HydrateClient>
   );
 }
 
