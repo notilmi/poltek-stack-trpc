@@ -105,7 +105,10 @@ export default function CreateTodoForm() {
             />
           </CardContent>
           <CardFooter>
-            <Button disabled={createTodo || updateTodoPending} type="submit">
+            <Button
+              disabled={createTodoPending || updateTodoPending}
+              type="submit"
+            >
               Create
             </Button>
           </CardFooter>
