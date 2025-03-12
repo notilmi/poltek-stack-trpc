@@ -11,7 +11,6 @@ import { NextAppProvider } from "@toolpad/core/nextjs";
 import { theme } from "./_lib/theme";
 import { auth } from "@/auth";
 import { AUTHENTICATION, NAVIGATION } from "./_constants";
-import { Account } from "@toolpad/core/Account";
 
 export const metadata: Metadata = {
   title: "Poltekstack",
