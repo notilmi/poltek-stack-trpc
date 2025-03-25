@@ -1,19 +1,29 @@
 import NextAuth from "next-auth";
 import { authConfig } from "./auth.config";
-import { type NextRequestWithAuth } from "./types";
+import { type NextRequest, NextResponse } from "next/server";
 
-const { auth: middleware } = NextAuth(authConfig);
+const { auth } = NextAuth(authConfig);
 
-export default middleware((req: NextRequestWithAuth) => {
-  if (!req.auth) {
+async function middleware(req: NextRequest) {
+  const session = await auth();
+
+  if (req.headers.has("x-middleware-subrequest")) {
+    return new NextResponse("Unauthorized", { status: 401 });
+  }
+
+  if (!session) {
     const url = new URL(req.url);
     url.pathname = "/auth";
-    return Response.redirect(url.toString(), 302);
+    return NextResponse.redirect(url.toString(), 302);
   }
-});
+
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: [
     "/((?!|auth|api|auth/|_next/static|api/trpc|_next/image|favicon.ico).*)",
   ],
 };
+
+export default middleware;
